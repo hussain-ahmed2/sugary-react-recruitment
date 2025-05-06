@@ -8,6 +8,7 @@ const InputField = ({
 	placeholder = "",
 	value = "",
 	onChange = () => {},
+	disabled = false,
 }) => {
 	return (
 		<div className="flex flex-col gap-1">
@@ -26,6 +27,7 @@ const InputField = ({
 				value={value}
 				onChange={onChange}
 				required={required}
+				disabled={disabled}
 			/>
 		</div>
 	);
