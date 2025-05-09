@@ -4,65 +4,74 @@ import Button from "../components/Button";
 import useAuth from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
-// initial errors
-const INITIALERRORS = {
+// Initial errors state
+const INITIAL_ERRORS = {
 	IncorrectUserName: false,
 	IncorrectPassword: false,
 	Message: "",
 };
 
-// initial/accepted credentials
-const INITIALUSERDATA = {
+// Initial/accepted credentials
+const INITIAL_USERDATA = {
 	UserName: "react@test.com",
 	Password: "playful009",
 };
 
 const LoginPage = () => {
-	const [userData, setUserData] = useState(INITIALUSERDATA); // state for handling the controlled form for user credentials
-	const [errors, setErrors] = useState(INITIALERRORS); // state for error to handling the form validation
-	const [isProcessing, setIsProcessing] = useState(false); // state for the form processing duration to disabling the submit operation
-	const { login } = useAuth(); // custom hook to get the login function the the authcontext
-	const navigate = useNavigate(); // hook for redirection
+	// State for handling user credentials form
+	const [userData, setUserData] = useState(INITIAL_USERDATA);
+	// State for handling form validation errors
+	const [errors, setErrors] = useState(INITIAL_ERRORS);
+	// State to manage form submission processing
+	const [isProcessing, setIsProcessing] = useState(false);
+	// Function to login user from auth context
+	const { login } = useAuth();
+	// Hook for page navigation
+	const navigate = useNavigate();
 
-	// form submit function 
+	// Form submission handler
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 
-		let success = true; // initialize the success is true
+		// Initialize success flag
+		let success = true;
 
-		// handle error and states with try catch and finally
+		// Handle login process
 		try {
-			setIsProcessing(true); // set processing start/true
-			await login(userData); // call the login function with the user credentials
+			setIsProcessing(true);
+			await login(userData);
 		} catch (error) {
-			const { IncorrectPassword, IncorrectUserName, Message, Success } = error.response.data; // destructure the error attributes
-			setErrors({ IncorrectPassword, IncorrectUserName, Message }); // set the error
-			success = Success; // set success to false
+			// Destructure error response attributes
+			const { IncorrectPassword, IncorrectUserName, Message, Success } = error.response.data;
+			// Update error state
+			setErrors({ IncorrectPassword, IncorrectUserName, Message });
+			success = Success;
 		} finally {
-			setIsProcessing(false); // set processing end/false
+			setIsProcessing(false);
 		}
 
-		if (success) { // if success then 
-			setErrors(INITIALERRORS); // reset errors
-			navigate("/dashboard"); // redirect to the /dashboard
+		// Redirect on successful login
+		if (success) {
+			setErrors(INITIAL_ERRORS);
+			navigate("/dashboard");
 		}
 	};
 
-	// function for handling the inputs change event
+	// Input change handler
 	const handleChange = (event) => {
-		const { name, value } = event.target; // destructure the name and value from event.target
+		const { name, value } = event.target;
 		setUserData((prev) => ({
-			...prev, // rest of the previous values
-			[name]: value, // update the current changed value
+			...prev,
+			[name]: value,
 		}));
 	};
 
 	return (
-		<section className="h-screen flex justify-center items-center">
+		<section className="h-screen flex justify-center items-center p-5">
 			<div className="max-w-xl w-full mx-auto">
 				<h1 className="font-bold text-4xl text-center mb-10">Login</h1>
 
-				{/* if error show the error message */}
+				{/* Display error message if present */}
 				<div
 					className={`transition-all duration-300 origin-top mb-3 text-nowrap text-sm text-rose-500 flex items-center justify-center ${
 						errors.Message ? "h-4 " : "h-0 translate-x-full"
@@ -71,42 +80,42 @@ const LoginPage = () => {
 					{errors.Message}
 				</div>
 
-				{/* login form */}
+				{/* Login form */}
 				<form
 					onSubmit={handleSubmit}
 					autoComplete="off"
 					className="space-y-3"
 				>
-					{/* custom input field for username */}
+					{/* Input field for username */}
 					<InputField
 						name="UserName"
 						label="Email"
 						type="email"
 						placeholder="Enter your email"
-						value={userData.UserName} // set initial value 
-						onChange={handleChange} // pass the handle change function
-						disabled={isProcessing} // if processing make the input field disabled
+						value={userData.UserName}
+						onChange={handleChange}
+						disabled={isProcessing}
 					/>
 
-					{/* custom input field for password */}
+					{/* Input field for password */}
 					<InputField
 						name="Password"
 						label="Password"
 						type="password"
 						placeholder="Enter your password"
-						value={userData.Password} // set initial value
-						onChange={handleChange} // pass the handle change function
-						disabled={isProcessing} // if processing make the input field disabled
+						value={userData.Password}
+						onChange={handleChange}
+						disabled={isProcessing}
 					/>
 
-					{/* custom submit button */}
+					{/* Submit button */}
 					<Button
 						type="submit"
 						label="Login"
 						className={`w-full ${
-							isProcessing && "ring-4 cursor-progress" // set cursor progress is processing
+							isProcessing && "ring-4 cursor-progress"
 						}`}
-						disabled={isProcessing} // disable if processing
+						disabled={isProcessing}
 					/>
 				</form>
 			</div>
